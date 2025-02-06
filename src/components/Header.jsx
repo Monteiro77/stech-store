@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import styled from "styled-components";
 import { Link } from "react-router-dom";
+import styled from "styled-components";
 import { MdOutlineShoppingCart } from "react-icons/md";
-import { FaSearch } from "react-icons/fa";
 import { BsFillMoonFill, BsFillSunFill } from "react-icons/bs";
 import logo from "../assets/logo-stech.png";
+import { useTheme } from "../context/ThemeProvider.jsx"; // Importando o ThemeContext
 
 const HeaderContainer = styled.header`
   position: fixed;
@@ -13,7 +13,7 @@ const HeaderContainer = styled.header`
   right: 0;
   z-index: 1000;
   display: flex;
-  height: 80px;
+  height: 10vh;
   justify-content: space-between;
   align-items: center;
   background: ${({ isScrolled }) => (isScrolled ? "rgba(8, 23, 71, 0.8)" : "#081747")};
@@ -22,16 +22,26 @@ const HeaderContainer = styled.header`
   border-bottom: 2px solid #fff;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   transition: background 0.3s ease-in-out;
+
+  @media (max-width: 768px) {
+    flex-direction: row;
+    height: auto;
+    padding: 10px 20px;
+  }
 `;
 
 const Logo = styled.img`
-    width: 140px;
-    transition: transform 0.3s ease-in-out;
+  width: 140px;
+  transition: transform 0.3s ease-in-out;
 
-    &:hover {
-        transform: scale(1.1);
-        cursor: pointer;
-    }
+  &:hover {
+    transform: scale(1.1);
+    cursor: pointer;
+  }
+
+  @media (max-width: 768px) {
+    width: 120px;
+  }
 `;
 
 const Nav = styled.nav`
@@ -48,47 +58,11 @@ const Nav = styled.nav`
       margin-right: 5px;
     }
   }
-`;
 
-const SearchContainer = styled.div`
-  display: flex;
-  align-items: center;
-  background-color: #fff;
-  padding: 2px 10px;
-  width: 250px;
-  border-radius: 20px;
-  border: 1px solid transparent;
-  transition: all 0.3s ease-in-out;
-
-  &:focus-within {
-    border-color: #3f58ad;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-  }
-`;
-
-const SearchInput = styled.input`
-  border: none;
-  outline: none;
-  width: 100%;
-  font-size: 1rem;
-  padding: 8px;
-  color: #081747;
-  background: transparent;
-  border-radius: 20px;
-
-  &::placeholder {
-    color: rgba(0, 0, 0, 0.5);
-  }
-`;
-
-const SearchIcon = styled(FaSearch)`
-  color: #3f58ad;
-  font-size: 18px;
-  margin-right: 10px;
-  transition: color 0.3s ease;
-
-  ${SearchContainer}:hover & {
-    color: #081747;
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
   }
 `;
 
@@ -96,6 +70,30 @@ const CartContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+
+  @media (max-width: 768px) {
+    justify-content: center;
+  }
+`;
+
+const CartWrapper = styled.div`
+  position: relative;
+`;
+
+const CartBadge = styled.span`
+  position: absolute;
+  top: -5px;
+  right: -10px;
+  background: red;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const CartIcon = styled(MdOutlineShoppingCart)`
@@ -125,8 +123,7 @@ const DarkModeButton = styled.button`
 `;
 
 const Header = ({ onSearch }) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [darkMode, setDarkMode] = useState(false);
+  const { darkMode, toggleDarkMode } = useTheme(); // Usando o contexto global do tema
   const [isScrolled, setIsScrolled] = useState(false);
   const [cartCount, setCartCount] = useState(0);
 
@@ -140,13 +137,8 @@ const Header = ({ onSearch }) => {
       setCartCount(cart.length);
     };
 
-    // Atualiza a contagem do carrinho no carregamento inicial
     updateCartCount();
-
-    // Monitora mudanças no localStorage
     window.addEventListener("storage", updateCartCount);
-
-    // Monitora o evento de scroll
     window.addEventListener("scroll", handleScroll);
 
     return () => {
@@ -154,16 +146,6 @@ const Header = ({ onSearch }) => {
       window.removeEventListener("storage", updateCartCount);
     };
   }, []);
-
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-    onSearch(e.target.value);
-  };
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    document.body.style.backgroundColor = darkMode ? "#fff" : "#121212";
-  };
 
   return (
     <HeaderContainer isScrolled={isScrolled}>
@@ -174,23 +156,15 @@ const Header = ({ onSearch }) => {
         <Link to="/produtos">Produtos</Link>
       </Nav>
 
-      <SearchContainer>
-        <SearchIcon />
-        <SearchInput
-          type="text"
-          placeholder="Buscar produto..."
-          value={searchTerm}
-          onChange={handleSearch}
-        />
-      </SearchContainer>
-
       <CartContainer>
         <DarkModeButton onClick={toggleDarkMode}>
           {darkMode ? <BsFillSunFill /> : <BsFillMoonFill />}
         </DarkModeButton>
         <Link to="/carrinho">
-          <CartIcon />
-          {cartCount > 0 && <span>{cartCount}</span>}
+          <CartWrapper>
+            <CartIcon />
+            {cartCount > 0 && <CartBadge>{cartCount}</CartBadge>}
+          </CartWrapper>
         </Link>
       </CartContainer>
     </HeaderContainer>

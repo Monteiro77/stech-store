@@ -7,6 +7,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import ProductDetails from './pages/ProductDetails/ProductDetails.jsx';
+import ShoppingCart from './pages/ShoppingCart/ShoppingCart.jsx';
 
 
 const router = createBrowserRouter([
@@ -17,6 +18,7 @@ const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: '/produtos', element: <Products /> },
       { path: '/produto/:id', element: <ProductDetails /> },
+      { path: '/carrinho', element: <ShoppingCart /> },
       { path: '*', element: <PageNotFound /> }
     ]
 
