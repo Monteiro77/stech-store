@@ -36,7 +36,7 @@ Este projeto é uma aplicação web para uma loja digital desenvolvida como part
 
 2. Acesse a pasta do projeto:
    ```bash
-   cd nome-do-repo
+   cd stech-store
    ```
 
 3. Instale as dependências:
